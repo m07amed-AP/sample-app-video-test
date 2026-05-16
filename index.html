@@ -7,15 +7,36 @@
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .test-before {
-      background: #1c1d1d;
-      color: #fff;
+
+    /* Hero video section (sits "before" the widget in the DOM) */
+    .hero {
+      position: relative;
+      width: 100%;
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+      overflow: hidden;
+      background: #000;
     }
+    .hero iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(115vw, 204.45vh);
+      height: max(64.6875vw, 115vh);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      border: 0;
+    }
+    .hero-cover {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    .hero-cover.hidden { opacity: 0; }
+
+    /* Section "after" the widget */
     .test-after {
       background: #fff;
       color: #1c1d1d;
@@ -26,9 +47,17 @@
   </style>
 </head>
 <body>
-  <!-- =============== Element BEFORE the header widget =============== -->
-  <section class="test-before">
-    Element BEFORE the header div
+  <!-- =============== Hero video (BEFORE the header widget) =============== -->
+  <section class="hero">
+    <iframe
+      id="hero-video"
+      src="https://www.youtube.com/embed/tppjGGHlAG4?autoplay=1&mute=1&loop=1&playlist=tppjGGHlAG4&controls=0&fs=0&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&enablejsapi=1"
+      title="Hero video"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      tabindex="-1"></iframe>
+    <div class="hero-cover" id="heroCover"></div>
   </section>
 
   <!-- =============== Header widget — copy this whole div into any page =============== -->
@@ -160,7 +189,7 @@
 
     <div class="jb-header__bar">
       <a href="#" class="jb-header__logo" aria-label="Home">
-        <img src="logo.svg" alt="Logo" />
+        <img src="https://joobran.com/cdn/shop/files/Untitled-2_150x@2x.png?v=1727964550" alt="Logo" />
       </a>
 
       <nav class="jb-header__icons">
@@ -238,7 +267,31 @@
   <!-- =============== Element AFTER the header widget =============== -->
   <section class="test-after">
     <h2>Element AFTER the header div</h2>
-    <p>This section sits below the header widget in the DOM. Because the header is <code>position: fixed</code>, it overlays content rather than pushing it down — so this content starts at the very top of the document, with the header floating above it.</p>
+    <p>This section sits below the widget in the DOM. The header is <code>position: fixed</code>, so it floats above the hero video and this content.</p>
   </section>
+
+  <!-- YouTube IFrame API for reliable autoplay/mute/loop -->
+  <script>
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = () => {
+      new YT.Player('hero-video', {
+        events: {
+          onReady: (e) => { e.target.mute(); e.target.playVideo(); },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              document.getElementById('heroCover').classList.add('hidden');
+            }
+            if (e.data === YT.PlayerState.ENDED) {
+              e.target.seekTo(0); e.target.playVideo();
+            }
+          },
+        },
+      });
+    };
+    setTimeout(() => document.getElementById('heroCover').classList.add('hidden'), 4000);
+  </script>
 </body>
 </html>
