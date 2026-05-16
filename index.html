@@ -45,12 +45,18 @@
     }
 
     .logo {
-      color: #fff;
+      display: inline-flex;
+      align-items: center;
       text-decoration: none;
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+    }
+    .logo img {
+      display: block;
+      height: 46px;
+      width: auto;
+    }
+    @media (max-width: 768px) {
+      .logo img { height: 36px; }
     }
 
     .nav-icons {
@@ -198,7 +204,9 @@
   <div class="announcement">FREE SHIPPING on all orders over 1,900 EGP &#128666;&#128230;</div>
 
   <header>
-    <a href="#" class="logo">JOOBRAN</a>
+    <a href="#" class="logo" aria-label="Home">
+      <img src="https://joobran.com/cdn/shop/files/Untitled-2_150x@2x.png?v=1727964550" alt="Logo" />
+    </a>
 
     <nav class="nav-icons">
       <a href="#account" class="login" aria-label="Log in">
