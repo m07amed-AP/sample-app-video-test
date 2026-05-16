@@ -20,17 +20,31 @@
       width: 100%;
       height: 100vh;
       overflow: hidden;
+      background: #000;
     }
 
+    /* Cover the viewport with a 16:9 iframe, oversized to crop YouTube's title/branding off-screen */
     .video-wrapper iframe {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 100%;
-      height: 100%;
+      width: max(115vw, 204.45vh);  /* 115vh * 16/9 */
+      height: max(64.6875vw, 115vh); /* 115vw * 9/16 */
       transform: translate(-50%, -50%);
+      pointer-events: none;
       border: 0;
     }
+
+    /* Black fade-in overlay hides the initial YouTube poster/play-button flash, fades out once playing */
+    .video-cover {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    .video-cover.hidden { opacity: 0; }
 
     header {
       position: fixed;
@@ -43,7 +57,6 @@
       justify-content: space-between;
       padding: 20px 40px;
       background: transparent;
-      transition: background 0.3s ease;
     }
 
     .logo {
@@ -146,12 +159,15 @@
 
   <div class="video-wrapper">
     <iframe
-      src="https://www.youtube-nocookie.com/embed/tppjGGHlAG4?rel=0"
-      title="YouTube video"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      id="hero-video"
+      src="https://www.youtube.com/embed/tppjGGHlAG4?autoplay=1&mute=1&loop=1&playlist=tppjGGHlAG4&controls=0&fs=0&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&enablejsapi=1"
+      title="Hero video"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
+      tabindex="-1">
     </iframe>
+    <div class="video-cover" id="videoCover"></div>
   </div>
 
   <script>
@@ -170,6 +186,37 @@
         menu.classList.remove('open');
       }
     });
+
+    // Load YouTube IFrame API for reliable autoplay/mute/loop control and to know when to fade in
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    let player;
+    window.onYouTubeIframeAPIReady = () => {
+      player = new YT.Player('hero-video', {
+        events: {
+          onReady: (e) => {
+            e.target.mute();
+            e.target.playVideo();
+          },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              document.getElementById('videoCover').classList.add('hidden');
+            }
+            if (e.data === YT.PlayerState.ENDED) {
+              e.target.seekTo(0);
+              e.target.playVideo();
+            }
+          },
+        },
+      });
+    };
+
+    // Safety fallback: hide cover after 4s even if API doesn't load
+    setTimeout(() => {
+      document.getElementById('videoCover').classList.add('hidden');
+    }, 4000);
   </script>
 </body>
 </html>
