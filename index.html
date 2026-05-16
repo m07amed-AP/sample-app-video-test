@@ -9,12 +9,161 @@
 
     html, body {
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       background: #000;
       color: #fff;
       overflow-x: hidden;
     }
 
+    /* --- Announcement bar --- */
+    .announcement {
+      background: #1c1d1d;
+      color: #fff;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+    }
+
+    /* --- Header --- */
+    header {
+      position: fixed;
+      top: 36px;
+      left: 0;
+      right: 0;
+      z-index: 19;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      background: transparent;
+    }
+
+    .logo {
+      color: #fff;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .nav-icons a,
+    .nav-icons button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      color: #fff;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-icons a:hover,
+    .nav-icons button:hover { opacity: 0.7; }
+
+    .nav-icons svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    }
+
+    /* hide login icon on small screens, like joobran */
+    @media (max-width: 768px) {
+      .nav-icons .login { display: none; }
+      header { padding: 14px 20px; }
+      .announcement { font-size: 12px; }
+    }
+
+    /* --- Slide-in drawer (burger menu) --- */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s;
+      z-index: 30;
+    }
+    .drawer-backdrop.open { opacity: 1; visibility: visible; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 85vw;
+      background: #fff;
+      color: #1c1d1d;
+      z-index: 31;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid #eee;
+    }
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .drawer-close {
+      background: none;
+      border: 0;
+      cursor: pointer;
+      color: #1c1d1d;
+      padding: 4px;
+      display: inline-flex;
+    }
+    .drawer-close svg { width: 22px; height: 22px; }
+
+    .drawer-nav {
+      list-style: none;
+      padding: 12px 0;
+      margin: 0;
+    }
+    .drawer-nav a {
+      display: block;
+      padding: 16px 24px;
+      color: #1c1d1d;
+      text-decoration: none;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #f3f3f3;
+      transition: background 0.2s ease;
+    }
+    .drawer-nav a:hover { background: #f7f7f7; }
+
+    /* --- Video wrapper --- */
     .video-wrapper {
       position: relative;
       width: 100%;
@@ -23,19 +172,17 @@
       background: #000;
     }
 
-    /* Cover the viewport with a 16:9 iframe, oversized to crop YouTube's title/branding off-screen */
     .video-wrapper iframe {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: max(115vw, 204.45vh);  /* 115vh * 16/9 */
-      height: max(64.6875vw, 115vh); /* 115vw * 9/16 */
+      width: max(115vw, 204.45vh);
+      height: max(64.6875vw, 115vh);
       transform: translate(-50%, -50%);
       pointer-events: none;
       border: 0;
     }
 
-    /* Black fade-in overlay hides the initial YouTube poster/play-button flash, fades out once playing */
     .video-cover {
       position: absolute;
       inset: 0;
@@ -45,117 +192,57 @@
       transition: opacity 0.8s ease;
     }
     .video-cover.hidden { opacity: 0; }
-
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      background: transparent;
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
-      letter-spacing: 0.5px;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .logo:hover { opacity: 0.85; }
-
-    .burger {
-      width: 32px;
-      height: 24px;
-      position: relative;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      z-index: 11;
-    }
-
-    .burger span {
-      display: block;
-      position: absolute;
-      height: 3px;
-      width: 100%;
-      background: #fff;
-      border-radius: 2px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
-    }
-
-    .burger span:nth-child(1) { top: 0; }
-    .burger span:nth-child(2) { top: 10px; }
-    .burger span:nth-child(3) { top: 20px; }
-
-    .burger.open span:nth-child(1) {
-      top: 10px;
-      transform: rotate(45deg);
-    }
-    .burger.open span:nth-child(2) { opacity: 0; }
-    .burger.open span:nth-child(3) {
-      top: 10px;
-      transform: rotate(-45deg);
-    }
-
-    .menu {
-      position: fixed;
-      top: 70px;
-      right: 40px;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 8px;
-      padding: 12px 0;
-      min-width: 180px;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-      z-index: 10;
-    }
-
-    .menu.open {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .menu a {
-      display: block;
-      padding: 12px 20px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 15px;
-      transition: background 0.2s ease;
-    }
-
-    .menu a:hover { background: rgba(255, 255, 255, 0.1); }
   </style>
 </head>
 <body>
+  <div class="announcement">FREE SHIPPING on all orders over 1,900 EGP &#128666;&#128230;</div>
+
   <header>
-    <a href="#" class="logo">Home</a>
-    <button class="burger" id="burger" aria-label="Toggle menu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    <a href="#" class="logo">JOOBRAN</a>
+
+    <nav class="nav-icons">
+      <a href="#account" class="login" aria-label="Log in">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21c0-4.5 3.6-8 8-8s8 3.5 8 8"></path>
+        </svg>
+      </a>
+      <a href="#search" aria-label="Search">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+      </a>
+      <button id="burger" aria-label="Site navigation" aria-controls="nav-drawer" aria-expanded="false">
+        <svg viewBox="0 0 24 24" stroke-linecap="round">
+          <path d="M3 6h18M3 12h15M3 18h18"></path>
+        </svg>
+      </button>
+      <a href="#cart" aria-label="Cart">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"></path>
+          <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+        </svg>
+      </a>
+    </nav>
   </header>
 
-  <nav class="menu" id="menu">
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-  </nav>
+  <div class="drawer-backdrop" id="backdrop"></div>
+  <aside class="drawer" id="nav-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <span class="drawer-title">Menu</span>
+      <button class="drawer-close" id="drawerClose" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6l-12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer-nav">
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#story">Our Story</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </aside>
 
   <div class="video-wrapper">
     <iframe
@@ -172,51 +259,50 @@
 
   <script>
     const burger = document.getElementById('burger');
-    const menu = document.getElementById('menu');
+    const drawer = document.getElementById('nav-drawer');
+    const backdrop = document.getElementById('backdrop');
+    const closeBtn = document.getElementById('drawerClose');
 
-    burger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      burger.classList.toggle('open');
-      menu.classList.toggle('open');
-    });
+    const openDrawer = () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      burger.setAttribute('aria-expanded', 'true');
+    };
+    const closeDrawer = () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      burger.setAttribute('aria-expanded', 'false');
+    };
 
-    document.addEventListener('click', (e) => {
-      if (!menu.contains(e.target) && !burger.contains(e.target)) {
-        burger.classList.remove('open');
-        menu.classList.remove('open');
-      }
-    });
+    burger.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
-    // Load YouTube IFrame API for reliable autoplay/mute/loop control and to know when to fade in
+    // YouTube IFrame API for reliable autoplay/mute/loop
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
 
-    let player;
     window.onYouTubeIframeAPIReady = () => {
-      player = new YT.Player('hero-video', {
+      new YT.Player('hero-video', {
         events: {
-          onReady: (e) => {
-            e.target.mute();
-            e.target.playVideo();
-          },
+          onReady: (e) => { e.target.mute(); e.target.playVideo(); },
           onStateChange: (e) => {
             if (e.data === YT.PlayerState.PLAYING) {
               document.getElementById('videoCover').classList.add('hidden');
             }
             if (e.data === YT.PlayerState.ENDED) {
-              e.target.seekTo(0);
-              e.target.playVideo();
+              e.target.seekTo(0); e.target.playVideo();
             }
           },
         },
       });
     };
 
-    // Safety fallback: hide cover after 4s even if API doesn't load
-    setTimeout(() => {
-      document.getElementById('videoCover').classList.add('hidden');
-    }, 4000);
+    setTimeout(() => document.getElementById('videoCover').classList.add('hidden'), 4000);
   </script>
 </body>
 </html>
